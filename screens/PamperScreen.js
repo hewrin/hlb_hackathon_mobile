@@ -1,25 +1,44 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
-import { Container, Header, Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right } from 'native-base';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Container , Content, Card, CardItem, Thumbnail, Text, Button, Icon, Left, Body, Right, Spinner } from 'native-base';
 import { Image, AlertIOS } from 'react-native'
+import Header from '../components/Header'
+import Modal from "react-native-modal";
+import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class PamperScreen extends React.Component {
   static navigationOptions = {
-    title: 'Pamper',
+    headerTitle: <Header />, 
+    headerStyle: {
+      backgroundColor: '#2a0131'
+    }
   };
+
+  state = {
+    isVisible: false,
+    selectedItem: {}
+  }
 
   items() {
     return [
-      {name: 'Car', url: 'https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?cs=srgb&dl=car-vehicle-luxury-112460.jpg&fm=jpg', price: '20000'},
-      {name: 'Flowers', url: 'https://res.cloudinary.com/prestige-gifting/image/fetch/fl_progressive,q_95,e_sharpen:50,w_480/e_saturation:05/https://www.prestigeflowers.co.uk/images/NF1018.jpg', price: '10'},
-      {name: 'Beans', url: 'https://ll-us-i5.wal.co/asr/98dd5d0a-79db-423d-8a9f-1aaa084c60a5_1.dfc3290b334bedb6a61f7f24d80a6a5f.jpeg-f673312f2915e25f59fe438f7d481f5d65a3090a-optim-450x450.jpg?odnBg=FFFFFF', price: '3'},
-      {name: 'Table Tennis Table', url: 'https://images.sportsdirect.com/images/products/77022018_l.jpg', price: '400'},
-
+      {name: '100 IG Likes', url: require('../assets/images/likes100-01.png'), price: '10'},
+      {name: '1000 IG Likes', url: require('../assets/images/likes1000-01.png'), price: '100'},
+      {name: 'Tropical Island Vacation', url: require('../assets/images/island-01.png'), price: '200'},
+      {name: 'Sports Car', url: require('../assets/images/car-01.png'), price: '350'},
     ]
   }
 
-  async onPurchase(item) {
-    const url = 'https://f10ed65a.ngrok.io'
+  renderSpinner() {
+    if (this.state.isLoading) {
+      return <Spinner />
+    } else {
+      return null
+    }
+  }
+
+  async onConfirm(item) {
+    this.setState({isLoading: true })
+    const url = 'https://b1fa25c1.ngrok.io'
 
     const response = await fetch(
       `${url}/accounts/1`,
@@ -30,7 +49,7 @@ export default class PamperScreen extends React.Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          amount: `${item.price}`
+          amount: `${this.state.selectedItem.price}`
         })
       }
     ).then(response => {
@@ -39,7 +58,16 @@ export default class PamperScreen extends React.Component {
       .then(json => {
         return json;
       });
-    this.props.navigation.navigate('Home') 
+
+    const resetAction = StackActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({routeName: 'Home', key: 'Home', params: {payed: 'true'}})],
+    });
+    this.props.navigation.dispatch(resetAction);
+  }
+
+  onPurchase(item) {
+    this.setState({selectedItem: item, isVisible: true})
   }
 
   onPurchaseClick(item) {
@@ -65,24 +93,24 @@ export default class PamperScreen extends React.Component {
 
     return items.map((item, index) =>{
     return(
-      <Card key={index}>
-        <CardItem>
+      <Card key={index} style={{backgroundColor: '#2a0131'}}>
+        <CardItem style={{backgroundColor: '#620181'}}>
           <Left>
             <Body>
-              <Text>{item.name}</Text>
+              <Text style={{color: 'white'}}>{item.name}</Text>
             </Body>
           </Left>
         </CardItem>
-        <CardItem cardBody>
-          <Image source={{uri: item.url}} style={{height: 200, width: null, flex: 1}}/>
+        <CardItem cardBody style={{backgroundColor: '#2a0131'}}>
+          <Image source={item.url} style={{height: 200, width: null, flex: 1, resizeMode: 'contain'}} />
         </CardItem>
-        <CardItem>
+        <CardItem style={{backgroundColor: '#2a0131'}}>
           <Left>
           </Left>
           <Body>
-            <Button transparent onPress={() => this.onPurchaseClick(item)}>
-              <Icon active name="card" />
-              <Text>{`RM${item.price}`}</Text>
+            <Button style={{backgroundColor: 'white'}} onPress={() => this.onPurchaseClick(item)}>
+              <Icon active name="card" style={{color: '#2a0131'}} />
+              <Text style={{color: '#2a0131'}}>{`RM${item.price}`}</Text>
             </Button>
           </Body>
           <Right>
@@ -96,21 +124,41 @@ export default class PamperScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView>
-        <Container>
-          <Content>
+      <ScrollView style={{backgroundColor: '#2a0131'}}>
+        <Container style={{backgroundColor: '#2a0131'}}>
+          <Content style={{backgroundColor: '#2a0131'}}>
+            {this.renderSpinner()}
             {this.renderCards()}
+            }
           </Content>
         </Container>
+        <View flexDirection='row' justifyContent='flex-end'>
+          <Modal
+            isVisible={this.state.isVisible}
+            backdropColor={"#2a0131"}
+            backdropOpacity={1}
+            animationIn="zoomInUp"
+            animationOut="zoomOut"
+            animationInTiming={150}
+            animationOutTiming={100}
+            backdropTransitionInTiming={1000}
+            backdropTransitionOutTiming={1000}
+            onModalHide={() => this.onConfirm()}
+              >
+              <Button onPress={() => this.setState({isVisible: false})} style={{backgroundColor: '#2a0131'}}>
+                <Image source={require('../assets/images/ApplePay.png')} 
+                    style={{width: '100%', resizeMode: 'contain'}} 
+            />
+              </Button>
+          </Modal>
+        </View>
       </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 15,
-    backgroundColor: '#fff',
+  backgroundColor: {
+    backgroundColor: '#2a0131',
   },
 });

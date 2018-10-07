@@ -2,59 +2,93 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
-import TabBarIcon from '../components/TabBarIcon';
+import { TabBarIcon, BigTabBarIcon, HugeTabBarIcon } from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import PamperScreen from '../screens/PamperScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import PaymentScreen from '../screens/PaymentScreen'
+import TouchScreen from '../screens/TouchScreen'
+import ApprovedScreen from '../screens/ApprovedScreen'
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
 });
 
 HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
+      color='#dc01bd'
+      name='md-heart-outline'
     />
   ),
 };
 
 const PamperStack = createStackNavigator({
   Pamper: PamperScreen,
+  Home: HomeScreen
 });
 
 PamperStack.navigationOptions = {
-  tabBarLabel: 'Pamper',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
-    />
-  ),
+    tabBarIcon: ({ focused }) => {
+    return <HugeTabBarIcon/>
+  },
+
 };
 
 const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
+  Payment: PaymentScreen,
+  Touch: TouchScreen,
+  Approved: ApprovedScreen
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
+      color='#8e8e93'
+      name='ios-settings'
+    />
+  ),
+};
+
+const Settings2Stack = createStackNavigator({
+  Settings: SettingsScreen,
+});
+
+Settings2Stack.navigationOptions = {
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      color='#8e8e93'
+      name="md-chatbubbles"
+    />
+  ),
+};
+
+const Settings3Stack = createStackNavigator({
+  Settings: SettingsScreen,
+});
+
+Settings3Stack.navigationOptions = {
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      color='#8e8e93'
+      name="md-image"
     />
   ),
 };
 
 export default createBottomTabNavigator({
   HomeStack,
+  Settings2Stack,
   PamperStack,
+  Settings3Stack,
   SettingsStack,
-});
+},
+  {
+    tabBarOptions: {
+      showLabel: false,
+      style: {
+        backgroundColor: '#000'
+      }
+    },
+  });
