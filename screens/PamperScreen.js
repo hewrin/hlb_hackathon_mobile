@@ -5,6 +5,7 @@ import { Image, AlertIOS } from 'react-native'
 import Header from '../components/Header'
 import Modal from "react-native-modal";
 import { StackActions, NavigationActions } from 'react-navigation';
+import Loader from '../components/loader';
 
 export default class PamperScreen extends React.Component {
   static navigationOptions = {
@@ -16,7 +17,8 @@ export default class PamperScreen extends React.Component {
 
   state = {
     isVisible: false,
-    selectedItem: {}
+    selectedItem: {},
+    loading: false
   }
 
   items() {
@@ -29,15 +31,11 @@ export default class PamperScreen extends React.Component {
   }
 
   renderSpinner() {
-    if (this.state.isLoading) {
-      return <Spinner />
-    } else {
-      return null
-    }
+    return <Loader loading={ this.state.loading } />
   }
 
   async onConfirm(item) {
-    this.setState({isLoading: true })
+    this.setState({loading: true })
     const url = 'https://b1fa25c1.ngrok.io'
 
     const response = await fetch(
